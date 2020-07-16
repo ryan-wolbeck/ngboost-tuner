@@ -39,7 +39,7 @@ def build_cli():
         "--target",
         type=str,
         default=os.getenv("TARGET"),
-        help=f"Target variable (predicted variable). Default value: {os.getenv('TARGET')}",
+        help=f"Target variable (predicted variable). Default value: TARGET environment variable",
     )
     tune.add_argument(
         "-id",
@@ -54,7 +54,7 @@ def build_cli():
         action="append",
         type=list,
         default=list(os.getenv("TRAIN_COLUMNS").split(",")),
-        help=f"The full list of columns: Defaults to {os.getenv('TRAIN_COLUMNS')}",
+        help="The full list of columns: Defaults to TRAIN_COLUMNS environment variable",
     )
     tune.add_argument(
         "-ef",
