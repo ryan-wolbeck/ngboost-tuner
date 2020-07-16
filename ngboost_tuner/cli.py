@@ -35,18 +35,18 @@ def build_cli():
         help="Input file data; defaults to $INPUT_FILE if not set",
     )
     tune.add_argument(
-        "-t",
-        "--target",
-        type=str,
-        default=os.getenv("TARGET"),
-        help=f"Target variable (predicted variable). Default value: TARGET environment variable",
-    )
-    tune.add_argument(
         "-id",
         "--id-key",
         type=str,
         default=os.getenv("ID"),
         help="ID to consider for splits to prevent leakage. Default: ID environment variable",
+    )
+    tune.add_argument(
+        "-t",
+        "--target",
+        type=str,
+        default=os.getenv("TARGET"),
+        help=f"Target variable (predicted variable). Default value: TARGET environment variable",
     )
     tune.add_argument(
         "-c",
@@ -62,6 +62,20 @@ def build_cli():
         type=float,
         default=0.2,
         help="Proportion of loadnums used for evaluation .2 is 20 percent of training leaving 80 percent train, 10 percent test, 10 percent validation. Default = .2",
+    )
+    tune.add_argument(
+        "-n",
+        "--n-search-boosters",
+        type=int,
+        default=20,
+        help="Number of n_estimators(booster) to use when searching. Default = 20",
+    )
+    tune.add_argument(
+        "-nf",
+        "--final-boosters",
+        type=int,
+        default=500,
+        help="Number of n_estimators(booster) to use to run the final model. Default = 500",
     )
 
     return root

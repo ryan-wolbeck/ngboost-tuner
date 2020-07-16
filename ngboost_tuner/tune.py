@@ -66,7 +66,11 @@ def run(args):
         "Base": hp.choice("Base", [b1, b2, b3]),
     }
 
-    default_params = {"n_estimators": 1, "verbose_eval": 1, "random_state": 1}
+    default_params = {
+        "n_estimators": args.n_search_boosters,
+        "verbose_eval": 1,
+        "random_state": 1,
+    }
 
     def objective(params):
 
@@ -100,7 +104,11 @@ def run(args):
 
     log.info(f"The Best parameters from hypteropt{best_params}")
 
-    default_params = {"n_estimators": 500, "verbose_eval": 1, "random_state": 1}
+    default_params = {
+        "n_estimators": args.final_boosters,
+        "verbose_eval": 1,
+        "random_state": 1,
+    }
 
     best_params.update(default_params)
 

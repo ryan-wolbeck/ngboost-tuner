@@ -32,19 +32,20 @@ services:
 ```bash 
 ngboost_tuner tune > file.log
 
-usage: ngboost_tuner tune [-h] [-i INPUT] [-t TARGET] [-id ID_KEY] [-c COLUMN]
-                          [-ef EVALUATION_FRACTION]
+usage: ngboost_tuner tune [-h] [-i INPUT] [-id ID_KEY] [-t TARGET] [-c COLUMN]
+                          [-ef EVALUATION_FRACTION] [-n N_SEARCH_BOOSTERS]
+                          [-nf FINAL_BOOSTERS]
 
 optional arguments:
   -h, --help            show this help message and exit
   -i INPUT, --input INPUT, --input-file INPUT
                         Input file data; defaults to $INPUT_FILE if not set
-  -t TARGET, --target TARGET
-                        Target variable (predicted variable). Default value:
-                        TARGET environment variable
   -id ID_KEY, --id-key ID_KEY
                         ID to consider for splits to prevent leakage. Default:
                         ID environment variable
+  -t TARGET, --target TARGET
+                        Target variable (predicted variable). Default value:
+                        TARGET environment variable
   -c COLUMN, --column COLUMN
                         The full list of columns: Defaults to TRAIN_COLUMNS
                         environment variable
@@ -52,4 +53,10 @@ optional arguments:
                         Proportion of loadnums used for evaluation .2 is 20
                         percent of training leaving 80 percent train, 10
                         percent test, 10 percent validation. Default = .2
+  -n N_SEARCH_BOOSTERS, --n-search-boosters N_SEARCH_BOOSTERS
+                        Number of n_estimators(booster) to use when searching.
+                        Default = 20
+  -nf FINAL_BOOSTERS, --final-boosters FINAL_BOOSTERS
+                        Number of n_estimators(booster) to use to run the
+                        final model. Default = 500
 ```
