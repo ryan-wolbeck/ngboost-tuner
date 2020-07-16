@@ -43,8 +43,8 @@ optional arguments:
                         Target variable (predicted variable). Default value:
                         TARGET environment variable
   -id ID_KEY, --id-key ID_KEY
-                        ID to consider for splits to prevent leakage. Default
-                        loadnum
+                        ID to consider for splits to prevent leakage. Default:
+                        ID environment variable
   -c COLUMN, --column COLUMN
                         The full list of columns: Defaults to TRAIN_COLUMNS
                         environment variable

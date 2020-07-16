@@ -46,7 +46,7 @@ def build_cli():
         "--id-key",
         type=str,
         default=os.getenv("ID"),
-        help=f"ID to consider for splits to prevent leakage. Default {os.getenv('ID')}",
+        help="ID to consider for splits to prevent leakage. Default: ID environment variable",
     )
     tune.add_argument(
         "-c",
