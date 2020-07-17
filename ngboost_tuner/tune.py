@@ -27,6 +27,7 @@ def run(args):
 
     log.info("Reading data into Memory")
     data = pd.read_csv(args.input, sep="\t")
+    data = data.sample(frac=args.limit, random_state=1)
     log.info("Data finished loading into Memory")
 
     ids = data[args.id_key].unique()

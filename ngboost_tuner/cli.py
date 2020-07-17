@@ -35,6 +35,13 @@ def build_cli():
         help="Input file data; defaults to $INPUT_FILE if not set",
     )
     tune.add_argument(
+        "-l",
+        "--limit",
+        type=float,
+        default=1.0,
+        help="Proportion of input tsv to use, .2 is 20 percent. Default: 1.0 or all of input",
+    )
+    tune.add_argument(
         "-id",
         "--id-key",
         type=str,

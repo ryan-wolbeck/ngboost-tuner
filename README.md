@@ -32,14 +32,17 @@ services:
 ```bash 
 ngboost_tuner tune 2> file.log
 
-usage: ngboost_tuner tune [-h] [-i INPUT] [-id ID_KEY] [-t TARGET] [-c COLUMN]
-                          [-ef EVALUATION_FRACTION] [-n N_SEARCH_BOOSTERS]
-                          [-nf FINAL_BOOSTERS]
+usage: ngboost_tuner tune [-h] [-i INPUT] [-l LIMIT] [-id ID_KEY] [-t TARGET]
+                          [-c COLUMN] [-ef EVALUATION_FRACTION]
+                          [-n N_SEARCH_BOOSTERS] [-nf FINAL_BOOSTERS]
 
 optional arguments:
   -h, --help            show this help message and exit
   -i INPUT, --input INPUT, --input-file INPUT
                         Input file data; defaults to $INPUT_FILE if not set
+  -l LIMIT, --limit LIMIT
+                        Proportion of input tsv to use, .2 is 20 percent.
+                        Default: 1.0 or all of input
   -id ID_KEY, --id-key ID_KEY
                         ID to consider for splits to prevent leakage. Default:
                         ID environment variable
@@ -60,3 +63,6 @@ optional arguments:
                         Number of n_estimators(booster) to use to run the
                         final model. Default = 500
 ```
+
+## Reference
+[1] [T. Duan, et al., NGBoost: Natural Gradient Boosting for Probabilistic Prediction (2019), ArXiv 1910.03225](https://arxiv.org/abs/1910.03225)
