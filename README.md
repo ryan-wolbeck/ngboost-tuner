@@ -3,8 +3,19 @@ A CLI Tuner of NGBoost
 
 ## Install
 
+Build from source
+```bash
+# Pull the code
+git clone git@github.com:ryan-wolbeck/ngboost-tuner.git
+# Build the container and detach
+docker-compose up --build -d
+# Exec into the container
+docker-compose exec tuner bash
+# Run the tuner
+python -m ngboost_tuner tune -i file.tsv
+```
 This pacakge requires python 3.6+
-
+Update soon to come to allow this
 ```bash
 pip install ngboost-tuner
 ```
