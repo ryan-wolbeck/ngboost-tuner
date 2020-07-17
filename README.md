@@ -30,7 +30,7 @@ services:
 ## Run
 
 ```bash 
-ngboost_tuner tune > file.log
+ngboost_tuner tune 2> file.log
 
 usage: ngboost_tuner tune [-h] [-i INPUT] [-id ID_KEY] [-t TARGET] [-c COLUMN]
                           [-ef EVALUATION_FRACTION] [-n N_SEARCH_BOOSTERS]

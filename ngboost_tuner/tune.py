@@ -68,7 +68,7 @@ def run(args):
 
     default_params = {
         "n_estimators": args.n_search_boosters,
-        "verbose_eval": 1,
+        "verbose_eval": 10,
         "random_state": 1,
     }
 
