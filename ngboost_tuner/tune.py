@@ -140,4 +140,4 @@ def run(args):
 
     pickle.dump(ngb, open(f"{path}ngbtest.p", "wb"))
 
-    log.info(f"Model saved to: {file_path}")
+    log.info(f"Model saved to: {path}")
