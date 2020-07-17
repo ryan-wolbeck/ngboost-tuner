@@ -14,11 +14,6 @@ docker-compose exec tuner bash
 # Run the tuner
 python -m ngboost_tuner tune -i file.tsv
 ```
-This pacakge requires python 3.6+
-Update soon to come to allow this
-```bash
-pip install ngboost-tuner
-```
 
 Example docker-compose.yml
 ```yaml
@@ -36,6 +31,13 @@ services:
       - INPUT_FILE=/usr/src/app/file.tsv
     restart: unless-stopped
     command: tail -f /dev/null
+```
+
+This pacakge requires python 3.6+
+
+Update soon to come to allow this
+```bash
+pip install ngboost-tuner
 ```
 
 ## Run
