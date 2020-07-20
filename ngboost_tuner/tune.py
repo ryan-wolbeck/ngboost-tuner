@@ -43,6 +43,7 @@ def run(args):
     da_df_val = data[data[args.id_key].isin(val_ids.to_list())]
 
     if args.column != None and args.target != None:
+        args.column.remove(args.target)
         x_test = da_df_test[args.column]
         y_test = da_df_test[args.target]
 
