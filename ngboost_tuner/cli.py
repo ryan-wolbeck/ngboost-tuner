@@ -71,6 +71,20 @@ def build_cli():
         help="Proportion of loadnums used for evaluation .2 is 20 percent of training leaving 80 percent train, 10 percent test, 10 percent validation. Default = .2",
     )
     tune.add_argument(
+        "-m",
+        "--minibatch-frac",
+        type=float,
+        default=1.0,
+        help="Sample proportion for each boosting round during hyperopt. Default = 1.0 or 100 percent",
+    )
+    tune.add_argument(
+        "-d",
+        "--max-depth-range",
+        type=float,
+        default=5,
+        help="The range to test the max depth of the base learner. Default 5 tests max_depth 2-5",
+    )
+    tune.add_argument(
         "-n",
         "--n-search-boosters",
         type=int,

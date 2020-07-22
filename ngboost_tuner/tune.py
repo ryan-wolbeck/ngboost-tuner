@@ -58,20 +58,22 @@ def run(args):
     else:
         sys.exit("Columns were not supplied")
 
-    b1 = DecisionTreeRegressor(criterion="friedman_mse", max_depth=2)
-    b2 = DecisionTreeRegressor(criterion="friedman_mse", max_depth=3)
-    b3 = DecisionTreeRegressor(criterion="friedman_mse", max_depth=4)
+    base_models = [
+        DecisionTreeRegressor(criterion="friedman_mse", max_depth=i)
+        for i in range(2, args.max_depth_range + 1)
+    ]
+    log.info(base_models)
 
     space = {
         "learning_rate": hp.uniform("learning_rate", 0.05, 1),
-        "minibatch_frac": hp.choice("minibatch_frac", [1.0, 0.5]),
-        "Base": hp.choice("Base", [b1, b2, b3]),
+        "Base": hp.choice("Base", base_models),
     }
 
     default_params = {
         "n_estimators": args.n_search_boosters,
         "verbose_eval": 10,
         "random_state": 1,
+        "minibatch_frac": args.minibatch_frac,
     }
 
     def objective(params):
