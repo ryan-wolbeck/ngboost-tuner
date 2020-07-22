@@ -47,6 +47,7 @@ ngboost_tuner tune 2> file.log
 
 usage: ngboost_tuner tune [-h] [-i INPUT] [-l LIMIT] [-id ID_KEY] [-t TARGET]
                           [-c COLUMN] [-ef EVALUATION_FRACTION]
+                          [-m MINIBATCH_FRAC] [-d MAX_DEPTH_RANGE]
                           [-n N_SEARCH_BOOSTERS] [-nf FINAL_BOOSTERS]
 
 optional arguments:
@@ -69,6 +70,12 @@ optional arguments:
                         Proportion of loadnums used for evaluation .2 is 20
                         percent of training leaving 80 percent train, 10
                         percent test, 10 percent validation. Default = .2
+  -m MINIBATCH_FRAC, --minibatch-frac MINIBATCH_FRAC
+                        Sample proportion for each boosting round during
+                        hyperopt. Default = 1.0 or 100 percent
+  -d MAX_DEPTH_RANGE, --max-depth-range MAX_DEPTH_RANGE
+                        The range to test the max depth of the base learner.
+                        Default 5 tests max_depth 2-5
   -n N_SEARCH_BOOSTERS, --n-search-boosters N_SEARCH_BOOSTERS
                         Number of n_estimators(booster) to use when searching.
                         Default = 20
