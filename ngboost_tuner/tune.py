@@ -43,16 +43,17 @@ def run(args):
         da_df_test = data[data[args.id_key].isin(test_ids.to_list())]
         da_df_val = data[data[args.id_key].isin(val_ids.to_list())]
     else:
-        X_intermediate, da_df_test = train_test_split(data, 
-                                                        shuffle=True,
-                                                        test_size=args.evaluation_fraction/2, 
-                                                        random_state=1)
+        X_intermediate, da_df_test = train_test_split(
+            data, shuffle=True, test_size=args.evaluation_fraction / 2, random_state=1
+        )
 
         # train/validation split (gives us train and validation sets)
-        da_df_train, da_df_val = train_test_split(X_intermediate,
-                                                        shuffle=False,
-                                                        test_size=args.evaluation_fraction/2,
-                                                        random_state=1)
+        da_df_train, da_df_val = train_test_split(
+            X_intermediate,
+            shuffle=False,
+            test_size=args.evaluation_fraction / 2,
+            random_state=1,
+        )
 
         # delete intermediate variables
         del X_intermediate
