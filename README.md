@@ -46,11 +46,12 @@ pip install ngboost-tuner
 ngboost_tuner tune 2> file.log
 
 usage: ngboost_tuner tune [-h] [-i INPUT] [-s INPUT_FILE_SEPERATOR]
-                          [-tf TRAIN_FILE] [-tef TEST_FILE]
-                          [-vf VALIDATION_FILE] [-l LIMIT] [-id ID_KEY]
-                          [-t TARGET] [-c COLUMN] [-ef EVALUATION_FRACTION]
-                          [-m MINIBATCH_FRAC] [-d MAX_DEPTH_RANGE]
-                          [-n N_SEARCH_BOOSTERS] [-nf FINAL_BOOSTERS]
+                          [-ct COMPRESSION_TYPE] [-tf TRAIN_FILE]
+                          [-tef TEST_FILE] [-vf VALIDATION_FILE] [-l LIMIT]
+                          [-id ID_KEY] [-t TARGET] [-c COLUMN]
+                          [-ef EVALUATION_FRACTION] [-m MINIBATCH_FRAC]
+                          [-d MAX_DEPTH_RANGE] [-n N_SEARCH_BOOSTERS]
+                          [-nf FINAL_BOOSTERS]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -59,6 +60,9 @@ optional arguments:
   -s INPUT_FILE_SEPERATOR, --input-file-seperator INPUT_FILE_SEPERATOR
                         Input data file seperator, i.e. commas or tabs;
                         defaults to $SEPERATOR if not set
+  -ct COMPRESSION_TYPE, --compression-type COMPRESSION_TYPE
+                        Input data compression, i.e. gzip or None; defaults to
+                        $COMPRESSION if not set
   -tf TRAIN_FILE, --train-file TRAIN_FILE
                         Input train data; defaults to $TRAIN_FILE if not set
   -tef TEST_FILE, --test-file TEST_FILE
