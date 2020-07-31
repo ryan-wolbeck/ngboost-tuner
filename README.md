@@ -45,8 +45,10 @@ pip install ngboost-tuner
 ```bash 
 ngboost_tuner tune 2> file.log
 
-usage: ngboost_tuner tune [-h] [-i INPUT] [-l LIMIT] [-id ID_KEY] [-t TARGET]
-                          [-c COLUMN] [-ef EVALUATION_FRACTION]
+usage: ngboost_tuner tune [-h] [-i INPUT] [-s INPUT_FILE_SEPERATOR]
+                          [-tf TRAIN_FILE] [-tef TEST_FILE]
+                          [-vf VALIDATION_FILE] [-l LIMIT] [-id ID_KEY]
+                          [-t TARGET] [-c COLUMN] [-ef EVALUATION_FRACTION]
                           [-m MINIBATCH_FRAC] [-d MAX_DEPTH_RANGE]
                           [-n N_SEARCH_BOOSTERS] [-nf FINAL_BOOSTERS]
 
@@ -54,6 +56,16 @@ optional arguments:
   -h, --help            show this help message and exit
   -i INPUT, --input INPUT, --input-file INPUT
                         Input file data; defaults to $INPUT_FILE if not set
+  -s INPUT_FILE_SEPERATOR, --input-file-seperator INPUT_FILE_SEPERATOR
+                        Input data file seperator, i.e. commas or tabs;
+                        defaults to $SEPERATOR if not set
+  -tf TRAIN_FILE, --train-file TRAIN_FILE
+                        Input train data; defaults to $TRAIN_FILE if not set
+  -tef TEST_FILE, --test-file TEST_FILE
+                        Input test data; defaults to $TEST_FILE if not set
+  -vf VALIDATION_FILE, --validation-file VALIDATION_FILE
+                        Input validation data; defaults to $VALIDATION_FILE if
+                        not set
   -l LIMIT, --limit LIMIT
                         Proportion of input tsv to use, .2 is 20 percent.
                         Default: 1.0 or all of input

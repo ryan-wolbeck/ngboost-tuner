@@ -2,6 +2,12 @@ import os
 import sys
 import argparse
 from ngboost_tuner.tune import run as run_tune
+import binascii
+
+
+def is_gz_file(filepath):
+    with open(filepath, "rb") as test_f:
+        return binascii.hexlify(test_f.read(2)) == b"1f8b"
 
 
 def input_file(parser, path):
@@ -10,7 +16,10 @@ def input_file(parser, path):
     if not os.path.exists(path):
         parser.error(f"{path} path does not exist")
         sys.exit(1)
-    return open(path, "r")
+    if is_gz_file(path):
+        return open(path, "rb")
+    else:
+        return open(path, "r")
 
 
 def build_cli():
@@ -33,6 +42,41 @@ def build_cli():
         type=lambda path: input_file(tune, path),
         default=os.getenv("INPUT_FILE"),
         help="Input file data; defaults to $INPUT_FILE if not set",
+    )
+    tune.add_argument(
+        "-s",
+        "--input-file-seperator",
+        type=str,
+        default=os.getenv("SEPERATOR"),
+        help="Input data file seperator, i.e. commas or tabs; defaults to $SEPERATOR if not set",
+    )
+    tune.add_argument(
+        "-ct",
+        "--compression-type",
+        type=str,
+        default=os.getenv("COMPRESSION"),
+        help="Input data compression, i.e. gzip or None; defaults to $COMPRESSION if not set",
+    )
+    tune.add_argument(
+        "-tf",
+        "--train-file",
+        type=lambda path: input_file(tune, path),
+        default=os.getenv("TRAIN_FILE"),
+        help="Input train data; defaults to $TRAIN_FILE if not set",
+    )
+    tune.add_argument(
+        "-tef",
+        "--test-file",
+        type=lambda path: input_file(tune, path),
+        default=os.getenv("TEST_FILE"),
+        help="Input test data; defaults to $TEST_FILE if not set",
+    )
+    tune.add_argument(
+        "-vf",
+        "--validation-file",
+        type=lambda path: input_file(tune, path),
+        default=os.getenv("VALIDATION_FILE"),
+        help="Input validation data; defaults to $VALIDATION_FILE if not set",
     )
     tune.add_argument(
         "-l",
