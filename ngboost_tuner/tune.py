@@ -82,18 +82,21 @@ def run(args):
             args.train_file,
             sep=args.input_file_seperator,
             compression=args.compression_type,
+            nrows=10000,
         )
         da_df_train = da_df_train.sample(frac=args.limit, random_state=1)
         da_df_test = pd.read_csv(
             args.test_file,
             sep=args.input_file_seperator,
             compression=args.compression_type,
+            nrows=10000,
         )
         da_df_test = da_df_test.sample(frac=args.limit, random_state=1)
         da_df_val = pd.read_csv(
             args.validation_file,
             sep=args.input_file_seperator,
             compression=args.compression_type,
+            nrows=10000,
         )
         da_df_val = da_df_val.sample(frac=args.limit, random_state=1)
     else:
@@ -116,22 +119,27 @@ def run(args):
         sys.exit("Columns were not supplied")
 
     if args.lightgbm:
-        base_params = {
+        base_params_lightgbm = {
             "objective": "rmse",
             "metric": "rmse",
-            "num_leaves": 2056,
             "learning_rate": 0.9,
-            "min_data_in_bin": 64,
             "n_estimators": 1,
             "num_threads": 8,
             "verbosity": 1,
             "silent": False,
-            "min_child_samples": 2056,
         }
-        lgbr = LGBMRegressor(**base_params)
 
         space = {
-            "learning_rate": hp.uniform("learning_rate", 0.05, 1),
+            "num_leaves_lgbm": hp.choice(
+                "num_leaves", [32, 128, 512, 1024, 2056, 8224]
+            ),
+            "learning_rate_ngboost": hp.uniform("learning_rate", 0.1, 1.0),
+            "min_child_samples_lgbm": hp.choice(
+                "min_child_samples", [16, 32, 64, 128, 256, 512]
+            ),
+            "min_data_in_bin_lgbm": hp.choice(
+                "min_data_in_bin", [16, 32, 64, 128, 256, 512]
+            ),
         }
 
         default_params = {
@@ -140,8 +148,75 @@ def run(args):
             "random_state": 1,
             "minibatch_frac": args.minibatch_frac,
             "Score": CRPScore,
+        }
+
+        def objective(params):
+            base_params_lightgbm = {"num_leaves": params["num_leaves_lgbm"]}
+            base_params_lightgbm = {
+                "min_child_samples": params["min_child_samples_lgbm"]
+            }
+            base_params_lightgbm = {"min_data_in_bin": params["min_data_in_bin_lgbm"]}
+            lgbr = LGBMRegressor(**base_params_lightgbm)
+            default_params = {"learning_rate": params["learning_rate_ngboost"]}
+            default_params = {"Base": lgbr}
+            print(params)
+            ngb = NGBRegressor(**default_params).fit(
+                x.values,
+                y.values,
+                X_val=x_valid.values,
+                Y_val=y_valid.values,
+                early_stopping_rounds=2,
+            )
+
+            loss = ngb.evals_result["val"]["LOGSCORE"][ngb.best_val_loss_itr]
+            log.info(params)
+            results = {"loss": loss, "status": STATUS_OK}
+
+            return results
+
+        TRIALS = Trials()
+        log.info("Start parameter optimization...")
+
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            best = fmin(
+                fn=objective,
+                space=space,
+                algo=tpe.suggest,
+                max_evals=100,
+                trials=TRIALS,
+            )
+        log.info("...done")
+
+        best_params = space_eval(space, best)
+
+        log.info(f"The Best parameters from hypteropt{best_params}")
+
+        final_params_lightgbm = {"num_leaves": best_params["num_leaves_lgbm"]}
+        final_params_lightgbm = {
+            "min_child_samples": best_params["min_child_samples_lgbm"]
+        }
+        final_params_lightgbm = {"min_data_in_bin": best_params["min_data_in_bin_lgbm"]}
+        final_params_lightgbm.update(base_params_lightgbm)
+        lgbr = LGBMRegressor(**final_params_lightgbm)
+        log.info(f"Running a model on the best parameter set {best_params}")
+
+        final_ngboost_params = {
+            "n_estimators": args.final_boosters,
+            "verbose_eval": 1,
+            "random_state": 1,
+            "learning_rate": best_params["learning_rate_ngboost"],
             "Base": lgbr,
         }
+
+        ngb = NGBRegressor(**final_ngboost_params).fit(
+            x.values,
+            y.values,
+            X_val=x_valid.values,
+            Y_val=y_valid.values,
+            early_stopping_rounds=2,
+        )
+
     else:
         base_models = [
             DecisionTreeRegressor(criterion="friedman_mse", max_depth=i)
@@ -162,55 +237,59 @@ def run(args):
             "Score": CRPScore,
         }
 
-    def objective(params):
+        def objective(params):
 
-        params.update(default_params)
+            params.update(default_params)
 
-        print(params)
-        ngb = NGBRegressor(**params).fit(
+            print(params)
+            ngb = NGBRegressor(**params).fit(
+                x.values,
+                y.values,
+                X_val=x_valid.values,
+                Y_val=y_valid.values,
+                early_stopping_rounds=2,
+            )
+            loss = ngb.evals_result["val"]["CRPSCORE"][ngb.best_val_loss_itr]
+            log.info(params)
+            results = {"loss": loss, "status": STATUS_OK}
+
+            return results
+
+        TRIALS = Trials()
+        log.info("Start parameter optimization...")
+
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            best = fmin(
+                fn=objective,
+                space=space,
+                algo=tpe.suggest,
+                max_evals=100,
+                trials=TRIALS,
+            )
+        log.info("...done")
+
+        best_params = space_eval(space, best)
+
+        log.info(f"The Best parameters from hypteropt{best_params}")
+
+        default_params = {
+            "n_estimators": args.final_boosters,
+            "verbose_eval": 1,
+            "random_state": 1,
+        }
+
+        best_params.update(default_params)
+
+        log.info(f"Running a model on the best parameter set {best_params}")
+
+        ngb = NGBRegressor(**best_params).fit(
             x.values,
             y.values,
             X_val=x_valid.values,
             Y_val=y_valid.values,
             early_stopping_rounds=2,
         )
-        loss = ngb.evals_result["val"]["CRPSCORE"][ngb.best_val_loss_itr]
-        log.info(params)
-        results = {"loss": loss, "status": STATUS_OK}
-
-        return results
-
-    TRIALS = Trials()
-    log.info("Start parameter optimization...")
-
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore")
-        best = fmin(
-            fn=objective, space=space, algo=tpe.suggest, max_evals=100, trials=TRIALS
-        )
-    log.info("...done")
-
-    best_params = space_eval(space, best)
-
-    log.info(f"The Best parameters from hypteropt{best_params}")
-
-    default_params = {
-        "n_estimators": args.final_boosters,
-        "verbose_eval": 1,
-        "random_state": 1,
-    }
-
-    best_params.update(default_params)
-
-    log.info(f"Running a model on the best parameter set {best_params}")
-
-    ngb = NGBRegressor(**best_params).fit(
-        x.values,
-        y.values,
-        X_val=x_valid.values,
-        Y_val=y_valid.values,
-        early_stopping_rounds=2,
-    )
 
     log.info("Finished training the final model, running diagnostics")
 
