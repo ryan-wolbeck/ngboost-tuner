@@ -1,3 +1,4 @@
 pandas==1.0.3
 ngboost==0.2.1
 hyperopt==0.2.4
+lightgbm==2.3.0

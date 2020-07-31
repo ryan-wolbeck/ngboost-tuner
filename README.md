@@ -51,7 +51,7 @@ usage: ngboost_tuner tune [-h] [-i INPUT] [-s INPUT_FILE_SEPERATOR]
                           [-id ID_KEY] [-t TARGET] [-c COLUMN]
                           [-ef EVALUATION_FRACTION] [-m MINIBATCH_FRAC]
                           [-d MAX_DEPTH_RANGE] [-n N_SEARCH_BOOSTERS]
-                          [-nf FINAL_BOOSTERS]
+                          [-nf FINAL_BOOSTERS] [-lgbm LIGHTGBM]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -98,6 +98,9 @@ optional arguments:
   -nf FINAL_BOOSTERS, --final-boosters FINAL_BOOSTERS
                         Number of n_estimators(booster) to use to run the
                         final model. Default = 500
+  -lgbm LIGHTGBM, --lightgbm LIGHTGBM
+                        Set to true for lightgbm as base regresor. Default
+                        $LIGHTGBM
 ```
 
 ## Reference

@@ -7,7 +7,12 @@ assert sys.version_info >= (3, 6, 0), "NGBoost-Tuner requires Python 3.6+"
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-tune_requires = ["pandas>=1.0.3", "ngboost>=0.2.0", "hyperopt>=0.2.4"]
+tune_requires = [
+    "pandas>=1.0.3",
+    "ngboost>=0.2.0",
+    "hyperopt>=0.2.4",
+    "lightgbm>=2.3.0",
+]
 
 setup(
     name="ngboost-tuner",

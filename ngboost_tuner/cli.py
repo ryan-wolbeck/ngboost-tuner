@@ -142,5 +142,12 @@ def build_cli():
         default=500,
         help="Number of n_estimators(booster) to use to run the final model. Default = 500",
     )
+    tune.add_argument(
+        "-lgbm",
+        "--lightgbm",
+        type=bool,
+        default=bool(os.getenv("LIGHTGBM")),
+        help="Set to true for lightgbm as base regresor. Default $LIGHTGBM",
+    )
 
     return root

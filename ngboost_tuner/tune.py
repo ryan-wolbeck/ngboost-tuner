@@ -4,6 +4,7 @@ from ngboost.ngboost import NGBoost
 from ngboost.learners import default_tree_learner
 from ngboost.distns import Normal
 from ngboost.scores import MLE
+from ngboost.scores import CRPScore
 from ngboost import NGBRegressor
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.metrics import (
@@ -11,6 +12,7 @@ from sklearn.metrics import (
     mean_absolute_error,
     mean_squared_error,
 )
+from lightgbm import LGBMRegressor
 from hyperopt import hp, tpe, space_eval
 from hyperopt.pyll.base import scope
 from hyperopt.fmin import fmin
@@ -113,23 +115,52 @@ def run(args):
     else:
         sys.exit("Columns were not supplied")
 
-    base_models = [
-        DecisionTreeRegressor(criterion="friedman_mse", max_depth=i)
-        for i in range(2, args.max_depth_range + 1)
-    ]
-    log.info(base_models)
+    if args.lightgbm:
+        base_params = {
+            "objective": "rmse",
+            "metric": "rmse",
+            "num_leaves": 2056,
+            "learning_rate": 0.9,
+            "min_data_in_bin": 64,
+            "n_estimators": 1,
+            "num_threads": 8,
+            "verbosity": 1,
+            "silent": False,
+            "min_child_samples": 2056,
+        }
+        lgbr = LGBMRegressor(**base_params)
 
-    space = {
-        "learning_rate": hp.uniform("learning_rate", 0.05, 1),
-        "Base": hp.choice("Base", base_models),
-    }
+        space = {
+            "learning_rate": hp.uniform("learning_rate", 0.05, 1),
+        }
 
-    default_params = {
-        "n_estimators": args.n_search_boosters,
-        "verbose_eval": 10,
-        "random_state": 1,
-        "minibatch_frac": args.minibatch_frac,
-    }
+        default_params = {
+            "n_estimators": args.n_search_boosters,
+            "verbose_eval": 1,
+            "random_state": 1,
+            "minibatch_frac": args.minibatch_frac,
+            "Score": CRPScore,
+            "Base": lgbr,
+        }
+    else:
+        base_models = [
+            DecisionTreeRegressor(criterion="friedman_mse", max_depth=i)
+            for i in range(2, args.max_depth_range + 1)
+        ]
+        log.info(base_models)
+
+        space = {
+            "learning_rate": hp.uniform("learning_rate", 0.05, 1),
+            "Base": hp.choice("Base", base_models),
+        }
+
+        default_params = {
+            "n_estimators": args.n_search_boosters,
+            "verbose_eval": 1,
+            "random_state": 1,
+            "minibatch_frac": args.minibatch_frac,
+            "Score": CRPScore,
+        }
 
     def objective(params):
 
@@ -143,7 +174,7 @@ def run(args):
             Y_val=y_valid.values,
             early_stopping_rounds=2,
         )
-        loss = ngb.evals_result["val"]["LOGSCORE"][ngb.best_val_loss_itr]
+        loss = ngb.evals_result["val"]["CRPSCORE"][ngb.best_val_loss_itr]
         log.info(params)
         results = {"loss": loss, "status": STATUS_OK}
 
