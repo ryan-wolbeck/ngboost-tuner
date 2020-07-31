@@ -82,21 +82,18 @@ def run(args):
             args.train_file,
             sep=args.input_file_seperator,
             compression=args.compression_type,
-            nrows=10000,
         )
         da_df_train = da_df_train.sample(frac=args.limit, random_state=1)
         da_df_test = pd.read_csv(
             args.test_file,
             sep=args.input_file_seperator,
             compression=args.compression_type,
-            nrows=10000,
         )
         da_df_test = da_df_test.sample(frac=args.limit, random_state=1)
         da_df_val = pd.read_csv(
             args.validation_file,
             sep=args.input_file_seperator,
             compression=args.compression_type,
-            nrows=10000,
         )
         da_df_val = da_df_val.sample(frac=args.limit, random_state=1)
     else:
