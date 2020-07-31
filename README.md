@@ -29,6 +29,12 @@ services:
       - ID=userid
       - TRAIN_COLUMNS=var1,var2
       - INPUT_FILE=/usr/src/app/file.tsv
+      - TRAIN_FILE=/usr/src/data/train_dataset.csv
+      - TEST_FILE=/usr/src/data/test_dataset.csv
+      - VALIDATION_FILE=/usr/src/data/val_dataset.csv
+      - SEPERATOR=,
+      - COMPRESSION=gzip
+      - LIGHTGBM=True
     restart: unless-stopped
     command: tail -f /dev/null
 ```
