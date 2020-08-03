@@ -4,7 +4,7 @@ from ngboost.ngboost import NGBoost
 from ngboost.learners import default_tree_learner
 from ngboost.distns import Normal
 from ngboost.scores import MLE
-from ngboost.scores import CRPScore
+from ngboost.scores import LogScore, CRPScore
 from ngboost import NGBRegressor
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.metrics import (
@@ -23,6 +23,8 @@ import logging as log
 import pickle
 from pathlib import Path
 import os
+
+import pickle
 
 
 def run(args):
@@ -139,25 +141,32 @@ def run(args):
             ),
         }
 
-        default_params = {
+        default_params_ngboost = {
             "n_estimators": args.n_search_boosters,
             "verbose_eval": 1,
             "random_state": 1,
             "minibatch_frac": args.minibatch_frac,
-            "Score": CRPScore,
+            "Score": LogScore,
+        }
+
+        default_params_lightgbm = {
+            "learning_rate": 0.9
         }
 
         def objective(params):
-            base_params_lightgbm = {"num_leaves": params["num_leaves_lgbm"]}
-            base_params_lightgbm = {
-                "min_child_samples": params["min_child_samples_lgbm"]
-            }
-            base_params_lightgbm = {"min_data_in_bin": params["min_data_in_bin_lgbm"]}
+            # Lightgbm params
+            base_params_lightgbm = default_params_lightgbm.copy()
+            base_params_lightgbm["num_leaves"] = params["num_leaves_lgbm"]
+            base_params_lightgbm["min_child_samples"] = params["min_child_samples_lgbm"]
+            base_params_lightgbm["min_data_in_bin"] = params["min_data_in_bin_lgbm"]
             lgbr = LGBMRegressor(**base_params_lightgbm)
-            default_params = {"learning_rate": params["learning_rate_ngboost"]}
-            default_params = {"Base": lgbr}
+
+            # NGBoost params
+            base_params_ngboost = default_params_ngboost.copy()
+            base_params_ngboost["learning_rate"] = params["learning_rate_ngboost"]
+            base_params_ngboost["Base"] = lgbr
             print(params)
-            ngb = NGBRegressor(**default_params).fit(
+            ngb = NGBRegressor(**base_params_ngboost).fit(
                 x.values,
                 y.values,
                 X_val=x_valid.values,
@@ -184,6 +193,12 @@ def run(args):
                 trials=TRIALS,
             )
         log.info("...done")
+
+        log.info("Saving TRIALS.trials object...")
+        with open('trials.pkl', 'wb') as handle:
+            pickle.dump(TRIALS.trials, handle)
+        log.info("...done")
+
 
         best_params = space_eval(space, best)
 
