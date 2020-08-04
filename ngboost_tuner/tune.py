@@ -118,15 +118,6 @@ def run(args):
         sys.exit("Columns were not supplied")
 
     if args.lightgbm:
-        base_params_lightgbm = {
-            "objective": "rmse",
-            "metric": "rmse",
-            "learning_rate": 0.9,
-            "n_estimators": 1,
-            "num_threads": 8,
-            "verbosity": 1,
-            "silent": False,
-        }
 
         space = {
             "num_leaves_lgbm": hp.choice(
@@ -150,7 +141,13 @@ def run(args):
         }
 
         default_params_lightgbm = {
-            "learning_rate": 0.9
+            "objective": "rmse",
+            "metric": "rmse",
+            "learning_rate": 0.9,
+            "n_estimators": 1,
+            "num_threads": 8,
+            "verbosity": 1,
+            "silent": False,
         }
 
         def objective(params):
