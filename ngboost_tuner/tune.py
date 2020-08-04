@@ -118,15 +118,6 @@ def run(args):
         sys.exit("Columns were not supplied")
 
     if args.lightgbm:
-        base_params_lightgbm = {
-            "objective": "rmse",
-            "metric": "rmse",
-            "learning_rate": 0.9,
-            "n_estimators": 1,
-            "num_threads": 8,
-            "verbosity": 1,
-            "silent": False,
-        }
 
         space = {
             "num_leaves_lgbm": hp.choice(
@@ -150,7 +141,13 @@ def run(args):
         }
 
         default_params_lightgbm = {
-            "learning_rate": 0.9
+            "objective": "rmse",
+            "metric": "rmse",
+            "learning_rate": 0.9,
+            "n_estimators": 1,
+            "num_threads": 8,
+            "verbosity": 1,
+            "silent": False,
         }
 
         def objective(params):
@@ -195,10 +192,9 @@ def run(args):
         log.info("...done")
 
         log.info("Saving TRIALS.trials object...")
-        with open('trials.pkl', 'wb') as handle:
+        with open("trials.pkl", "wb") as handle:
             pickle.dump(TRIALS.trials, handle)
         log.info("...done")
-
 
         best_params = space_eval(space, best)
 
@@ -209,7 +205,7 @@ def run(args):
             "min_child_samples": best_params["min_child_samples_lgbm"]
         }
         final_params_lightgbm = {"min_data_in_bin": best_params["min_data_in_bin_lgbm"]}
-        final_params_lightgbm.update(base_params_lightgbm)
+        final_params_lightgbm.update(default_params_lightgbm)
         lgbr = LGBMRegressor(**final_params_lightgbm)
         log.info(f"Running a model on the best parameter set {best_params}")
 
