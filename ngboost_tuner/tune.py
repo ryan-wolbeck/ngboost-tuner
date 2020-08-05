@@ -308,6 +308,9 @@ def run(args):
     mea = mean_absolute_error(y_test, Y_pred)
     log.info(f"Mean Absolute Error = {mea}")
 
+    mse = mean_squared_error(y_test, Y_pred)
+    log.info(f"Mean Squared Error = {mse}")
+
     log.info("Saving the model file")
 
     path = os.path.expanduser("/usr/src/app/models/")
