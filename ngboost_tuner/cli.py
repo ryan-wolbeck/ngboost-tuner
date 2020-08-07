@@ -149,7 +149,6 @@ def build_cli():
         default=bool(os.getenv("LIGHTGBM")),
         help="Set to true for lightgbm as base regresor. Default $LIGHTGBM",
     )
-
     tune.add_argument(
         "-mae",
         "--mae_loss",

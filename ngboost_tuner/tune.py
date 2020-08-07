@@ -23,7 +23,6 @@ import logging as log
 import pickle
 from pathlib import Path
 import os
-from math import sqrt
 
 import pickle
 
@@ -121,9 +120,11 @@ def run(args):
     if args.mae_loss:
         obj = "mae"
         score = CRPScore
+        score_str = "CRPSCORE"
     else:
         obj = "mse"
         score = LogScore
+        score_str = "LOGSCORE"
 
     if args.lightgbm:
 
@@ -179,7 +180,7 @@ def run(args):
                 early_stopping_rounds=2,
             )
 
-            loss = ngb.evals_result["val"][score.upper()][ngb.best_val_loss_itr]
+            loss = ngb.evals_result["val"][score_str][ngb.best_val_loss_itr]
             log.info(params)
             results = {"loss": loss, "status": STATUS_OK}
 
@@ -265,7 +266,7 @@ def run(args):
                 Y_val=y_valid.values,
                 early_stopping_rounds=2,
             )
-            loss = ngb.evals_result["val"][score.upper()][ngb.best_val_loss_itr]
+            loss = ngb.evals_result["val"][score_str][ngb.best_val_loss_itr]
             log.info(params)
             results = {"loss": loss, "status": STATUS_OK}
 
