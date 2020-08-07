@@ -209,6 +209,7 @@ def run(args):
 
         log.info(f"The Best parameters from hypteropt{best_params}")
 
+        final_params_lightgbm = {}
         final_params_lightgbm["num_leaves"] = best_params["num_leaves_lgbm"]
         final_params_lightgbm["min_child_samples"] = best_params["min_child_samples_lgbm"]
         final_params_lightgbm["min_data_in_bin"] = best_params["min_data_in_bin_lgbm"]
