@@ -23,6 +23,7 @@ import logging as log
 import pickle
 from pathlib import Path
 import os
+from math import sqrt
 
 import pickle
 
@@ -117,6 +118,13 @@ def run(args):
     else:
         sys.exit("Columns were not supplied")
 
+    if args.mae_loss:
+        obj = "mae"
+        score = CRPScore
+    else:
+        obj = "mse"
+        score = LogScore
+
     if args.lightgbm:
 
         space = {
@@ -137,12 +145,12 @@ def run(args):
             "verbose_eval": 1,
             "random_state": 1,
             "minibatch_frac": args.minibatch_frac,
-            "Score": LogScore,
+            "Score": score,
         }
 
         default_params_lightgbm = {
-            "objective": "rmse",
-            "metric": "rmse",
+            "objective": obj,
+            "metric": obj,
             "learning_rate": 0.9,
             "n_estimators": 1,
             "num_threads": 8,
@@ -171,7 +179,7 @@ def run(args):
                 early_stopping_rounds=2,
             )
 
-            loss = ngb.evals_result["val"]["LOGSCORE"][ngb.best_val_loss_itr]
+            loss = ngb.evals_result["val"][score.upper()][ngb.best_val_loss_itr]
             log.info(params)
             results = {"loss": loss, "status": STATUS_OK}
 
@@ -201,11 +209,9 @@ def run(args):
 
         log.info(f"The Best parameters from hypteropt{best_params}")
 
-        final_params_lightgbm = {"num_leaves": best_params["num_leaves_lgbm"]}
-        final_params_lightgbm = {
-            "min_child_samples": best_params["min_child_samples_lgbm"]
-        }
-        final_params_lightgbm = {"min_data_in_bin": best_params["min_data_in_bin_lgbm"]}
+        final_params_lightgbm["num_leaves"] = best_params["num_leaves_lgbm"]
+        final_params_lightgbm["min_child_samples"] = best_params["min_child_samples_lgbm"]
+        final_params_lightgbm["min_data_in_bin"] = best_params["min_data_in_bin_lgbm"]
         final_params_lightgbm.update(base_params_lightgbm)
         lgbr = LGBMRegressor(**final_params_lightgbm)
         log.info(f"Running a model on the best parameter set {best_params}")
@@ -216,6 +222,7 @@ def run(args):
             "random_state": 1,
             "learning_rate": best_params["learning_rate_ngboost"],
             "Base": lgbr,
+            "Score": score
         }
 
         ngb = NGBRegressor(**final_ngboost_params).fit(
@@ -228,7 +235,7 @@ def run(args):
 
     else:
         base_models = [
-            DecisionTreeRegressor(criterion="friedman_mse", max_depth=i)
+            DecisionTreeRegressor(criterion=obj, max_depth=i)
             for i in range(2, args.max_depth_range + 1)
         ]
         log.info(base_models)
@@ -243,7 +250,7 @@ def run(args):
             "verbose_eval": 1,
             "random_state": 1,
             "minibatch_frac": args.minibatch_frac,
-            "Score": CRPScore,
+            "Score": score,
         }
 
         def objective(params):
@@ -258,7 +265,7 @@ def run(args):
                 Y_val=y_valid.values,
                 early_stopping_rounds=2,
             )
-            loss = ngb.evals_result["val"]["CRPSCORE"][ngb.best_val_loss_itr]
+            loss = ngb.evals_result["val"][score.upper()][ngb.best_val_loss_itr]
             log.info(params)
             results = {"loss": loss, "status": STATUS_OK}
 
@@ -308,6 +315,9 @@ def run(args):
 
     mea = mean_absolute_error(y_test, Y_pred)
     log.info(f"Mean Absolute Error = {mea}")
+
+    rmse = sqrt(mean_squared_error(y_test, Y_pred))
+    log.info(f"Root Mean Squared Error = {rmse}")
 
     log.info("Saving the model file")
 
