@@ -150,4 +150,12 @@ def build_cli():
         help="Set to true for lightgbm as base regresor. Default $LIGHTGBM",
     )
 
+    tune.add_argument(
+        "-mae",
+        "--mae_loss",
+        type=bool,
+        default=False,
+        help="Set to true for median absolute error as loss function. Default False",
+    )
+
     return root
