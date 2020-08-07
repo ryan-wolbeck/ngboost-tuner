@@ -200,10 +200,9 @@ def run(args):
         log.info("...done")
 
         log.info("Saving TRIALS.trials object...")
-        with open('trials.pkl', 'wb') as handle:
+        with open("trials.pkl", "wb") as handle:
             pickle.dump(TRIALS.trials, handle)
         log.info("...done")
-
 
         best_params = space_eval(space, best)
 
@@ -213,6 +212,7 @@ def run(args):
         final_params_lightgbm["min_child_samples"] = best_params["min_child_samples_lgbm"]
         final_params_lightgbm["min_data_in_bin"] = best_params["min_data_in_bin_lgbm"]
         final_params_lightgbm.update(base_params_lightgbm)
+
         lgbr = LGBMRegressor(**final_params_lightgbm)
         log.info(f"Running a model on the best parameter set {best_params}")
 
@@ -316,8 +316,8 @@ def run(args):
     mea = mean_absolute_error(y_test, Y_pred)
     log.info(f"Mean Absolute Error = {mea}")
 
-    rmse = sqrt(mean_squared_error(y_test, Y_pred))
-    log.info(f"Root Mean Squared Error = {rmse}")
+    mse = mean_squared_error(y_test, Y_pred)
+    log.info(f"Mean Squared Error = {mse}")
 
     log.info("Saving the model file")
 
