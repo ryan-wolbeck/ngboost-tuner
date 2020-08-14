@@ -3,6 +3,10 @@ A CLI Tuner of NGBoost
 
 ## Install
 
+```
+pip install ngboost-tuner
+```
+
 Build from source
 ```bash
 # Pull the code
@@ -37,13 +41,6 @@ services:
       - LIGHTGBM=True
     restart: unless-stopped
     command: tail -f /dev/null
-```
-
-This pacakge requires python 3.6+
-
-Update soon to come to allow this
-```bash
-pip install ngboost-tuner
 ```
 
 ## Run
