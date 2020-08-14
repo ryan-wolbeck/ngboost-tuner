@@ -54,7 +54,7 @@ def build_cli():
         "-ct",
         "--compression-type",
         type=str,
-        default=os.getenv("COMPRESSION"),
+        default=os.getenv("COMPRESSION", None),
         help="Input data compression, i.e. gzip or None; defaults to $COMPRESSION if not set",
     )
     tune.add_argument(

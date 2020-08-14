@@ -233,6 +233,8 @@ def run(args):
             Y_val=y_valid.values,
             early_stopping_rounds=2,
         )
+        log.info(f"Final LightGBM parameters {final_params_lightgbm}")
+        log.info(f"Final NGBoost parameters {final_ngboost_params}")
 
     else:
         base_models = [
