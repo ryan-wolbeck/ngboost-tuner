@@ -56,6 +56,8 @@ def run(args):
             da_df_train = data[data[args.id_key].isin(train_ids.to_list())]
             da_df_test = data[data[args.id_key].isin(test_ids.to_list())]
             da_df_val = data[data[args.id_key].isin(val_ids.to_list())]
+
+            del data
         else:
             X_intermediate, da_df_test = train_test_split(
                 data,
@@ -211,7 +213,9 @@ def run(args):
 
         final_params_lightgbm = default_params_lightgbm.copy()
         final_params_lightgbm["num_leaves"] = best_params["num_leaves_lgbm"]
-        final_params_lightgbm["min_child_samples"] = best_params["min_child_samples_lgbm"]
+        final_params_lightgbm["min_child_samples"] = best_params[
+            "min_child_samples_lgbm"
+        ]
         final_params_lightgbm["min_data_in_bin"] = best_params["min_data_in_bin_lgbm"]
 
         lgbr = LGBMRegressor(**final_params_lightgbm)
@@ -223,7 +227,7 @@ def run(args):
             "random_state": 1,
             "learning_rate": best_params["learning_rate_ngboost"],
             "Base": lgbr,
-            "Score": score
+            "Score": score,
         }
 
         ngb = NGBRegressor(**final_ngboost_params).fit(

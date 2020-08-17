@@ -47,7 +47,7 @@ def build_cli():
         "-s",
         "--input-file-seperator",
         type=str,
-        default=os.getenv("SEPERATOR"),
+        default=os.getenv("SEPERATOR", "\t"),
         help="Input data file seperator, i.e. commas or tabs; defaults to $SEPERATOR if not set",
     )
     tune.add_argument(
