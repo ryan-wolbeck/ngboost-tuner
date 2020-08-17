@@ -16,7 +16,7 @@ tune_requires = [
 
 setup(
     name="ngboost-tuner",
-    version="0.0.1",
+    version="0.0.2",
     author="Ryan Wolbeck",
     author_email="wolbeck.ryan@gmail.com",
     description="A CLI to tune NGBoost",
